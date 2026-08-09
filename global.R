@@ -4,7 +4,6 @@ library(shiny)
 library(bslib)
 library(bsicons)
 library(thematic)
-library(shinylive)
 
 library(svglite)
 library(tidyr)
