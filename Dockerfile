@@ -1,6 +1,6 @@
 FROM rocker/shiny:latest
 
-# 1. Installation des dépendances système Linux essentielles
+# 1. Installation des dépendances système Linux de base
 RUN apt-get update && apt-get install -y \
     build-essential \
     libxml2-dev \
@@ -14,19 +14,36 @@ RUN apt-get update && apt-get install -y \
     libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Fixation du dépôt CRAN au snapshot Posit
-RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/2026-03-01'))"
+# 2. Configuration du miroir de binaires Linux Ubuntu (Posit Package Manager)
+# Utiliser 'ubuntu-24.04' et 'binary' permet de télécharger des packages R pré-compilés en 2 secondes sans compilation C++
+ENV CRAN_BINARY_REPO="https://packagemanager.posit.co/cran/__linux__/noble/2026-03-01"
 
-# 3. Installation des packages principaux de l'interface et manipulation de données
-RUN R -e "install.packages(c('shiny', 'bslib', 'bsicons', 'thematic', 'svglite', 'tidyr', 'dplyr', 'ggplot2', 'scales', 'ragg'), repos='https://packagemanager.posit.co/cran/2026-03-01')"
+# 3. Installation de l'ensemble des packages R sous forme de binaires
+RUN R -e "options(repos = c(CRAN = '$CRAN_BINARY_REPO')); \
+    install.packages(c( \
+        'vctrs', \
+        'pillar', \
+        'tibble', \
+        'shiny', \
+        'bslib', \
+        'bsicons', \
+        'thematic', \
+        'svglite', \
+        'tidyr', \
+        'dplyr', \
+        'ggplot2', \
+        'igraph', \
+        'network', \
+        'sna', \
+        'bipartite', \
+        'scales', \
+        'ragg' \
+    ))"
 
-# 4. Installation des packages de réseaux/graphes (bipartite et igraph)
-RUN R -e "install.packages(c('igraph', 'bipartite'), repos='https://packagemanager.posit.co/cran/2026-03-01')"
-
-# 5. Copie des fichiers de ton application dans Shiny Server
+# 4. Copie des fichiers de ton application Shiny
 COPY . /srv/shiny-server/
 
-# 6. Configuration du port
+# 5. Configuration du port
 EXPOSE 3838
 
 CMD ["R", "-e", "shiny::runApp('/srv/shiny-server', host='0.0.0.0', port=3838)"]
