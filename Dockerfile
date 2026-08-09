@@ -1,6 +1,6 @@
 FROM rocker/shiny:latest
 
-# Dépendances système
+# 1. Dépendances système
 RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libssl-dev \
@@ -9,28 +9,27 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libpng-dev \
     libjpeg-dev \
+    libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Dépôt CRAN figé à une date précise (ex: 1er mars 2026)
-# Remplace la date si tu souhaites une autre date de référence
-ENV CRAN_SNAPSHOT="https://packagemanager.posit.co/cran/2026-03-01"
+# 2. Installation des packages depuis le snapshot Posit (figé au 1er mars 2026)
+RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/2026-03-01')); \
+    install.packages(c( \
+        'shiny', \
+        'bslib', \
+        'bsicons', \
+        'thematic', \
+        'svglite', \
+        'tidyr', \
+        'dplyr', \
+        'ggplot2', \
+        'bipartite', \
+        'igraph', \
+        'scales', \
+        'ragg' \
+    ))"
 
-# Installation de TOUS tes packages figés dans leur version exacte à cette date
-RUN R -e "options(repos = c(CRAN = processx::renv %||% '$CRAN_SNAPSHOT')); install.packages(c( \
-    'shiny', \
-    'bslib', \
-    'bsicons', \
-    'thematic', \
-    'svglite', \
-    'tidyr', \
-    'dplyr', \
-    'ggplot2', \
-    'bipartite', \
-    'igraph', \
-    'scales', \
-    'ragg' \
-), repos='$CRAN_SNAPSHOT')"
-
+# 3. Copie des fichiers et configuration Shiny
 COPY . /srv/shiny-server/
 
 EXPOSE 3838
