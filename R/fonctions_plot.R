@@ -249,7 +249,7 @@ plot_general_reseau <- function(annee){
   
   matrice <- liste_matrice_order[[index_annee(annee)]]
   
-  plotweb(
+  plotweb_deprecated(
     matrice,
     method = "normal",
     col.high = "brown",
