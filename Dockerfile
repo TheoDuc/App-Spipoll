@@ -1,6 +1,6 @@
 FROM rocker/shiny:latest
 
-# 1. Installation des dépendances système Linux de base
+# 1. Installation de TOUTES les dépendances système Linux pour les packages R graphiques et réseaux
 RUN apt-get update && apt-get install -y \
     build-essential \
     libxml2-dev \
@@ -11,24 +11,31 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libtiff5-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
     libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Configuration du miroir de binaires Linux Ubuntu (Posit Package Manager)
-# Utiliser 'ubuntu-24.04' et 'binary' permet de télécharger des packages R pré-compilés en 2 secondes sans compilation C++
 ENV CRAN_BINARY_REPO="https://packagemanager.posit.co/cran/__linux__/noble/2026-03-01"
 
-# 3. Installation de l'ensemble des packages R sous forme de binaires
+# 3. Installation ordonnée de tous les packages R
 RUN R -e "options(repos = c(CRAN = '$CRAN_BINARY_REPO')); \
     install.packages(c( \
+        'cpp11', \
+        'systemfonts', \
+        'textshaping', \
+        'ragg', \
+        'svglite', \
         'vctrs', \
         'pillar', \
         'tibble', \
+        'isoband', \
+        'S7', \
         'shiny', \
         'bslib', \
         'bsicons', \
         'thematic', \
-        'svglite', \
         'tidyr', \
         'dplyr', \
         'ggplot2', \
@@ -36,8 +43,7 @@ RUN R -e "options(repos = c(CRAN = '$CRAN_BINARY_REPO')); \
         'network', \
         'sna', \
         'bipartite', \
-        'scales', \
-        'ragg' \
+        'scales' \
     ))"
 
 # 4. Copie des fichiers de ton application Shiny
