@@ -3,6 +3,7 @@ FROM rocker/shiny:latest
 # 1. Dépendances système Linux pour l'ensemble des packages (Réseaux, Graphiques, XML, Math)
 RUN apt-get update && apt-get install -y \
     build-essential \
+    cmake \
     libxml2-dev \
     libssl-dev \
     libcurl4-openssl-dev \
@@ -14,7 +15,6 @@ RUN apt-get update && apt-get install -y \
     libharfbuzz-dev \
     libfribidi-dev \
     libgsl-dev \
-    libcmake0 \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Définition du miroir CRAN officiel Posit Snapshot (Source universelle)
