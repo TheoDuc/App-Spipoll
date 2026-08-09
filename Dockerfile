@@ -1,6 +1,6 @@
 FROM rocker/shiny:latest
 
-# 1. Dépendances système
+# 1. Dépendances système (inclus libgsl-dev pour bipartite)
 RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libssl-dev \
@@ -12,24 +12,17 @@ RUN apt-get update && apt-get install -y \
     libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Installation des packages depuis le snapshot Posit (figé au 1er mars 2026)
-RUN R -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/2026-03-01')); \
-    install.packages(c( \
-        'shiny', \
-        'bslib', \
-        'bsicons', \
-        'thematic', \
-        'svglite', \
-        'tidyr', \
-        'dplyr', \
-        'ggplot2', \
-        'bipartite', \
-        'igraph', \
-        'scales', \
-        'ragg' \
-    ))"
+# 2. Configurer le dépôt figé (Snapshot Posit)
+ENV CRAN_REPO="https://packagemanager.posit.co/cran/2026-03-01"
 
-# 3. Copie des fichiers et configuration Shiny
+# 3. Installation explicite des packages
+RUN R -e "options(repos = c(CRAN = '$CRAN_REPO')); \
+    pkgs <- c('shiny', 'bslib', 'bsicons', 'thematic', 'svglite', 'tidyr', 'dplyr', 'ggplot2', 'bipartite', 'igraph', 'scales', 'ragg'); \
+    install.packages(pkgs, Ncpus = 2); \
+    missing <- pkgs[!pkgs %in% installed.packages()[, 'Package']]; \
+    if (length(missing) > 0) stop(paste('Packages manquants :', paste(missing, collapse = ', ')))"
+
+# 4. Copie des fichiers et configuration Shiny
 COPY . /srv/shiny-server/
 
 EXPOSE 3838
