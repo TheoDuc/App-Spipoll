@@ -1,0 +1,11 @@
+shinydashboard
+shiny
+bslib
+bsicons
+thematic
+svglite
+tidyr
+dplyr
+ggplot2
+bipartite
+igraph
