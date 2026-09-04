@@ -9,3 +9,4 @@ dplyr
 ggplot2
 bipartite
 igraph
+svglite
