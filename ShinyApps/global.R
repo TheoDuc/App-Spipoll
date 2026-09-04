@@ -5,7 +5,7 @@ library(bslib)
 library(bsicons)
 library(thematic)
 
-library(svglite)
+#library(svglite)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -20,7 +20,7 @@ thematic_shiny()
 res_base <- 96
 
 # Graphiques nets
-options(shiny.plot.output.type = "svg")
+#options(shiny.plot.output.type = "svg")
 
 # Variable générale
 years <- c(2010:2025)
